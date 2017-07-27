@@ -6,10 +6,11 @@ module.exports = function(grunt) {
       //write concat here
       options: {
         separator: ';',
+        sourceMap: true,
       },
       dist: {
-        src: ['public/**/*.js'],
-        dest: 'dist/<%= pkg.name %>.js',
+        src: ['public/client/*.js'],
+        dest: 'public/dist/<%= pkg.name %>.js',
       }
     },
 
@@ -31,21 +32,29 @@ module.exports = function(grunt) {
     uglify: {
       //write uglify here
       options: {
-
+        sourceMap: true,
+        sourceMapIncludeSources: true,
+        sourceMapIn: 'public/dist/<%= pkg.name %>.js.map',
       },
       build: {
-        src: 'dist/<%= pkg.name %>.js',
-        dest: 'build/<%= pkg.name %>.min.js',
+        src: ['public/dist/<%= pkg.name %>.js'],
+        dest: 'public/build/<%= pkg.name %>.min.js',
       },
     },
 
     eslint: {
       target: [
         // Add list of files to lint here
+        'public/client/*.js'
       ]
     },
 
     cssmin: {
+      target: {
+        files: {
+          'public/build/<%= pkg.name %>.min.css': ['public/*.css']
+        }
+      }
     },
 
     watch: {
@@ -68,6 +77,7 @@ module.exports = function(grunt) {
     shell: {
       prodServer: {
         //probably does a thing
+        command: 'git push baz master'
       }
     },
   });
@@ -95,7 +105,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'concat', 
-    'uglify'
+    'uglify',
+    'cssmin',
   ]);
 
   grunt.registerTask('upload', function(n) {
@@ -106,9 +117,15 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('deploy', [
+  grunt.registerTask('deploy', function(n) {
     // add your deploy tasks here
-  ]);
+    if (grunt.option('prod')) {
+      // add your production server task here
+      grunt.task.run([ 'nodemon', 'lint', 'build', 'test', 'shell' ]);
+    } else {
+      grunt.task.run([ 'nodemon', 'lint', 'build', 'test' ]);
+    }
+  });
 
 
 };
