@@ -3,6 +3,14 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      //write concat here
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: ['public/**/*.js'],
+        dest: 'dist/<%= pkg.name %>.js',
+      }
     },
 
     mochaTest: {
@@ -21,6 +29,14 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      //write uglify here
+      options: {
+
+      },
+      build: {
+        src: 'dist/<%= pkg.name %>.js',
+        dest: 'build/<%= pkg.name %>.min.js',
+      },
     },
 
     eslint: {
@@ -51,6 +67,7 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        //probably does a thing
       }
     },
   });
@@ -77,6 +94,8 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'concat', 
+    'uglify'
   ]);
 
   grunt.registerTask('upload', function(n) {
